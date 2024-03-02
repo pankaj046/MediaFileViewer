@@ -2,6 +2,7 @@ package com.github.pankaj046.library
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Rect
 import android.provider.MediaStore
 import android.util.AttributeSet
@@ -12,7 +13,6 @@ import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.io.File
 
 
 class FileExplorer @JvmOverloads constructor(
@@ -28,12 +28,32 @@ class FileExplorer @JvmOverloads constructor(
     private val fileAdapter = FileAdapter()
     private var selectedFile: HashSet<String> = hashSetOf()
     private var fileClickListener: FileClickListener?=null
+
+    private val DEFAULT_BACKGROUND_COLOR = Color.DKGRAY
+    private val DEFAULT_BUTTON_COLOR = Color.WHITE
+    private val DEFAULT_BUTTON_TEXT_COLOR = Color.BLACK
+    private val DEFAULT_BAR_COLOR = Color.BLACK
+    private val DEFAULT_SELECTED_TEXT_COLOR = Color.WHITE
+
     init {
         inflate(context, R.layout.layout_file_explorer, this)
         recyclerView = findViewById(R.id.recyclerView)
         multiSelectionView = findViewById(R.id.bottomLayout)
         selectedItemCount = findViewById(R.id.selectedItemCount)
         btnSelectedItem = findViewById(R.id.btnSelectedItem)
+        attrs?.let {
+            val typedArray = context.obtainStyledAttributes(it, R.styleable.media)
+            val bgColor = typedArray.getColor(R.styleable.media_backgroundColor, DEFAULT_BACKGROUND_COLOR)
+            val buttonColor = typedArray.getColor(R.styleable.media_buttonColor, DEFAULT_BUTTON_COLOR)
+            val buttonTextColor = typedArray.getColor(R.styleable.media_buttonTextColor, DEFAULT_BUTTON_TEXT_COLOR)
+            val barColor = typedArray.getColor(R.styleable.media_barColor, DEFAULT_BAR_COLOR)
+            val selectedTextColor = typedArray.getColor(R.styleable.media_selectedTextColor, DEFAULT_SELECTED_TEXT_COLOR)
+            this.setBackgroundColor(bgColor)
+            multiSelectionView.setBackgroundColor(barColor)
+            selectedItemCount.setTextColor(selectedTextColor)
+            btnSelectedItem.setBackgroundColor(buttonColor)
+            btnSelectedItem.setTextColor(buttonTextColor)
+        }
         setupRecyclerView()
     }
 

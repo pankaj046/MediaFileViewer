@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="media">
+        <attr name="backgroundColor" format="color"/>
+        <attr name="buttonColor" format="color"/>
+        <attr name="buttonTextColor" format="color"/>
+        <attr name="barColor" format="color"/>
+        <attr name="selectedTextColor" format="color"/>
+    </declare-styleable>
+</resources>

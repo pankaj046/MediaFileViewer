@@ -1,6 +1,8 @@
 package com.github.pankaj046.library
 
+import android.content.res.ColorStateList
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.media.ThumbnailUtils
 import android.os.Handler
 import android.os.Looper
@@ -11,6 +13,8 @@ import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.CheckBox
 import android.widget.ImageView
+import androidx.core.content.ContextCompat.getColor
+import androidx.core.widget.CompoundButtonCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
@@ -50,6 +54,8 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
             val imageView = binding.findViewById<ImageView>(R.id.imageView)
             val playButton = binding.findViewById<ImageView>(R.id.playButton)
             val isSelected = binding.findViewById<CheckBox>(R.id.isSelected)
+
+
             val file = File(filePath)
             isSelected.isChecked = selectedFile.contains(file.absolutePath)
             if (selectedFile.size > 0) {
