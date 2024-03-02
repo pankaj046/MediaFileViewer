@@ -1,9 +1,7 @@
 package com.github.pankaj046.library
 
-import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.ThumbnailUtils
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
@@ -23,6 +21,11 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
 
     private val executor: Executor = Executors.newFixedThreadPool(4)
     private val handler = Handler(Looper.getMainLooper())
+    private var fileClickListener: FileClickListener?=null
+
+    fun addListener(fileClickListener: FileClickListener?) {
+        this.fileClickListener = fileClickListener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -60,6 +63,7 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
             }
 
             binding.setOnClickListener {
+                fileClickListener?.onClick(file)
             }
         }
 

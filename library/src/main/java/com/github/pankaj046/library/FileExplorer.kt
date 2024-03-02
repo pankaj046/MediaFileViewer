@@ -15,7 +15,9 @@ class FileExplorer @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : RecyclerView(context, attrs, defStyleAttr) {
+
     private val fileAdapter = FileAdapter()
+    private var fileClickListener: FileClickListener? = null
 
     init {
         this.layoutManager = GridLayoutManager(context, 3)
@@ -30,6 +32,10 @@ class FileExplorer @JvmOverloads constructor(
         adapter = fileAdapter
     }
 
+
+    fun setListener(fileClickListener: FileClickListener) {
+        fileAdapter.addListener(fileClickListener)
+    }
 
     @SuppressLint("Range")
     private fun getMediaFilePaths(context: Context): ArrayList<String> {
