@@ -23,10 +23,15 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
     private val executor: Executor = Executors.newFixedThreadPool(4)
     private val handler = Handler(Looper.getMainLooper())
     private var fileClickListener: FileClickListener?=null
+    private var adapterClickListener: AdapterClickListener?=null
     private var selectedFile: HashSet<String> = hashSetOf()
 
     fun addListener(fileClickListener: FileClickListener?) {
         this.fileClickListener = fileClickListener
+    }
+
+    fun adapterListener(adapterClickListener: AdapterClickListener?) {
+        this.adapterClickListener = adapterClickListener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
@@ -79,13 +84,16 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
                 if (selectedFile.size > 0) {
                     if (selectedFile.contains(file.absolutePath)) {
                         selectedFile.remove(file.absolutePath)
+                        adapterClickListener?.onClick(selectedFile)
                     }else{
                         selectedFile.add(file.absolutePath)
+                        adapterClickListener?.onClick(selectedFile)
                     }
                     if (selectedFile.size > 0) {
                         isSelected.visibility = View.VISIBLE
                     }else{
                         isSelected.visibility = View.GONE
+                        adapterClickListener?.onClick(selectedFile)
                         notifyDataSetChanged()
                     }
                     notifyItemChanged(adapterPosition)
@@ -95,26 +103,10 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
             binding.setOnLongClickListener {
                 if (selectedFile.size == 0) {
                     selectedFile.add(file.absolutePath)
+                    adapterClickListener?.onClick(selectedFile)
                     notifyDataSetChanged()
                 }
                 return@setOnLongClickListener false
-            }
-
-            isSelected.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (buttonView.isPressed) {
-                    if (isChecked) {
-                        selectedFile.add(file.absolutePath)
-                        notifyItemChanged(adapterPosition)
-                    }else{
-                        selectedFile.remove(file.absolutePath)
-                    }
-                    if (selectedFile.size > 0) {
-                        isSelected.visibility = View.VISIBLE
-                    }else{
-                        isSelected.visibility = View.GONE
-                        notifyDataSetChanged()
-                    }
-                }
             }
         }
 

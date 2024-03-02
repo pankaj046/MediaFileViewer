@@ -6,32 +6,72 @@ import android.graphics.Rect
 import android.provider.MediaStore
 import android.util.AttributeSet
 import android.view.View
+import android.widget.Button
+import android.widget.RelativeLayout
+import android.widget.TextView
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.io.File
 
 
 class FileExplorer @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : RecyclerView(context, attrs, defStyleAttr) {
+) : CoordinatorLayout(context, attrs, defStyleAttr) {
 
+    private val recyclerView: RecyclerView
+    private val multiSelectionView: RelativeLayout
+    private val selectedItemCount: TextView
+    private val btnSelectedItem: Button
     private val fileAdapter = FileAdapter()
-
+    private var selectedFile: HashSet<String> = hashSetOf()
+    private var fileClickListener: FileClickListener?=null
     init {
-        this.layoutManager = GridLayoutManager(context, 3)
+        inflate(context, R.layout.layout_file_explorer, this)
+        recyclerView = findViewById(R.id.recyclerView)
+        multiSelectionView = findViewById(R.id.bottomLayout)
+        selectedItemCount = findViewById(R.id.selectedItemCount)
+        btnSelectedItem = findViewById(R.id.btnSelectedItem)
+        setupRecyclerView()
+    }
+
+    private fun setupRecyclerView() {
+        recyclerView.layoutManager = GridLayoutManager(context, 3)
         val spanCount = 3
         val spacing = 10
         val includeEdge = false
-        addItemDecoration(GridSpacingItemDecoration(spanCount, spacing, includeEdge))
-        val data  = getMediaFilePaths(context)
+        recyclerView.addItemDecoration(GridSpacingItemDecoration(spanCount, spacing, includeEdge))
+        val data = getMediaFilePaths(context)
         fileAdapter.submitList(data)
-        setHasFixedSize(true)
-        adapter = fileAdapter
+        recyclerView.setHasFixedSize(true)
+        recyclerView.adapter = fileAdapter
+        fileAdapter.adapterListener(object : AdapterClickListener {
+            override fun onClick(files: HashSet<String>?) {
+                files?.let {
+                    val paddingBottomPx = if (it.size>0){
+                        selectedFile = files
+                        multiSelectionView.visibility = View.VISIBLE
+                        recyclerView.clipToPadding = false
+                        selectedItemCount.text = String.format("%d selected", it.size)
+                        resources.getDimensionPixelSize(R.dimen.bottom_padding)
+                    }else{
+                        multiSelectionView.visibility = View.GONE
+                        recyclerView.clipToPadding = true
+                        0
+                    }
+                    recyclerView.setPadding(0, 0, 0, paddingBottomPx)
+                }
+            }
+        })
+
+        btnSelectedItem.setOnClickListener { fileClickListener?.mutipleSelected(selectedFile) }
     }
 
 
     fun setListener(fileClickListener: FileClickListener) {
+        this.fileClickListener = fileClickListener
         fileAdapter.addListener(fileClickListener)
     }
 
@@ -78,8 +118,8 @@ class FileExplorer @JvmOverloads constructor(
         private val spacing: Int,
         private val includeEdge: Boolean
     ) :
-        ItemDecoration() {
-        override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: State) {
+        RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
             val position = parent.getChildAdapterPosition(view)
             val column = position % spanCount
             if (includeEdge) {
