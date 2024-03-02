@@ -1,24 +1,28 @@
 package com.github.pankaj046.library
 
-import android.R.attr.path
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.ThumbnailUtils
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ImageView
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 
 class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiffCallback()) {
+
+    private val executor: Executor = Executors.newFixedThreadPool(4)
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -36,16 +40,17 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
             val imageView = binding.findViewById<ImageView>(R.id.imageView)
             val playButton = binding.findViewById<ImageView>(R.id.playButton)
             val file = File(filePath)
-
-            Log.e("AAAAAAAA", "bind: ${file.exists()}")
-
-            val thumbnail = if (isVideoFile(file.absolutePath)) {
-                ThumbnailUtils.createVideoThumbnail(file.absolutePath, MediaStore.Images.Thumbnails.MINI_KIND)
-            } else {
-                BitmapFactory.decodeFile(file.absolutePath)
-            }
-            thumbnail?.let {
-                imageView.setImageBitmap(thumbnail)
+            executor.execute {
+                val thumbnail = if (isVideoFile(file.absolutePath)) {
+                    ThumbnailUtils.createVideoThumbnail(file.absolutePath, MediaStore.Images.Thumbnails.MINI_KIND)
+                } else {
+                    BitmapFactory.decodeFile(file.absolutePath)
+                }
+                thumbnail?.let {
+                    handler.post {
+                        imageView.setImageBitmap(thumbnail)
+                    }
+                }
             }
 
             if (isVideoFile(file.absolutePath)) {
@@ -55,13 +60,6 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
             }
 
             binding.setOnClickListener {
-                val i = Intent()
-                i.setAction(Intent.ACTION_VIEW)
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                i.setDataAndType(Uri.parse("file://" + file.absolutePath),
-                    "application/vnd.android.package-archive"
-                )
-                it.context.startActivity(i)
             }
         }
 
