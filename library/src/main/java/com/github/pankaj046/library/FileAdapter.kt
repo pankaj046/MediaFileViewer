@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
+import android.widget.CheckBox
 import android.widget.ImageView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
     private val executor: Executor = Executors.newFixedThreadPool(4)
     private val handler = Handler(Looper.getMainLooper())
     private var fileClickListener: FileClickListener?=null
+    private var selectedFile: HashSet<String> = hashSetOf()
 
     fun addListener(fileClickListener: FileClickListener?) {
         this.fileClickListener = fileClickListener
@@ -34,15 +36,22 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
     }
 
     override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), holder.adapterPosition)
     }
 
     inner class FileViewHolder(private val binding: View) : RecyclerView.ViewHolder(binding) {
 
-        fun bind(filePath: String) {
+        fun bind(filePath: String, adapterPosition: Int) {
             val imageView = binding.findViewById<ImageView>(R.id.imageView)
             val playButton = binding.findViewById<ImageView>(R.id.playButton)
+            val isSelected = binding.findViewById<CheckBox>(R.id.isSelected)
             val file = File(filePath)
+            isSelected.isChecked = selectedFile.contains(file.absolutePath)
+            if (selectedFile.size > 0) {
+                isSelected.visibility = View.VISIBLE
+            }else{
+                isSelected.visibility = View.GONE
+            }
             executor.execute {
                 val thumbnail = if (isVideoFile(file.absolutePath)) {
                     ThumbnailUtils.createVideoThumbnail(file.absolutePath, MediaStore.Images.Thumbnails.MINI_KIND)
@@ -64,6 +73,31 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
 
             binding.setOnClickListener {
                 fileClickListener?.onClick(file)
+            }
+
+            binding.setOnLongClickListener {
+                if (selectedFile.size == 0) {
+                    selectedFile.add(file.absolutePath)
+                    notifyDataSetChanged()
+                }
+                return@setOnLongClickListener false
+            }
+
+            isSelected.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (buttonView.isPressed) {
+                    if (isChecked) {
+                        selectedFile.add(file.absolutePath)
+                        notifyItemChanged(adapterPosition)
+                    }else{
+                        selectedFile.remove(file.absolutePath)
+                    }
+                    if (selectedFile.size > 0) {
+                        isSelected.visibility = View.VISIBLE
+                    }else{
+                        isSelected.visibility = View.GONE
+                        notifyDataSetChanged()
+                    }
+                }
             }
         }
 
