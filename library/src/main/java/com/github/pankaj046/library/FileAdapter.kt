@@ -72,7 +72,24 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
             }
 
             binding.setOnClickListener {
-                fileClickListener?.onClick(file)
+                if (selectedFile.size == 0){
+                    fileClickListener?.onClick(file)
+                }
+
+                if (selectedFile.size > 0) {
+                    if (selectedFile.contains(file.absolutePath)) {
+                        selectedFile.remove(file.absolutePath)
+                    }else{
+                        selectedFile.add(file.absolutePath)
+                    }
+                    if (selectedFile.size > 0) {
+                        isSelected.visibility = View.VISIBLE
+                    }else{
+                        isSelected.visibility = View.GONE
+                        notifyDataSetChanged()
+                    }
+                    notifyItemChanged(adapterPosition)
+                }
             }
 
             binding.setOnLongClickListener {

@@ -17,7 +17,6 @@ class FileExplorer @JvmOverloads constructor(
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
     private val fileAdapter = FileAdapter()
-    private var fileClickListener: FileClickListener? = null
 
     init {
         this.layoutManager = GridLayoutManager(context, 3)
@@ -27,7 +26,6 @@ class FileExplorer @JvmOverloads constructor(
         addItemDecoration(GridSpacingItemDecoration(spanCount, spacing, includeEdge))
         val data  = getMediaFilePaths(context)
         fileAdapter.submitList(data)
-        fileAdapter.notifyDataSetChanged()
         setHasFixedSize(true)
         adapter = fileAdapter
     }
