@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("maven-publish")
 }
 
 android {
@@ -33,4 +34,18 @@ android {
 
 dependencies {
     implementation("com.google.android.material:material:1.11.0")
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+
+                groupId = "com.github.pankaj046"
+                artifactId = "media-selector"
+                version = "0.0.1"
+            }
+        }
+    }
 }
