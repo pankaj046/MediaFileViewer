@@ -53,6 +53,7 @@ class FileExplorer @JvmOverloads constructor(
             selectedItemCount.setTextColor(selectedTextColor)
             btnSelectedItem.setBackgroundColor(buttonColor)
             btnSelectedItem.setTextColor(buttonTextColor)
+            fileAdapter.setCheckBoxColor(typedArray)
         }
         setupRecyclerView()
     }

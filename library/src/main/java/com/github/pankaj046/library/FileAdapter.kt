@@ -1,6 +1,7 @@
 package com.github.pankaj046.library
 
 import android.content.res.ColorStateList
+import android.content.res.TypedArray
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.ThumbnailUtils
@@ -13,8 +14,7 @@ import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.CheckBox
 import android.widget.ImageView
-import androidx.core.content.ContextCompat.getColor
-import androidx.core.widget.CompoundButtonCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
@@ -29,6 +29,8 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
     private var fileClickListener: FileClickListener?=null
     private var adapterClickListener: AdapterClickListener?=null
     private var selectedFile: HashSet<String> = hashSetOf()
+    private var selectorColor:TypedArray?=null
+    private val DEFAULT_SELECTED_COLOR = Color.WHITE
 
     fun addListener(fileClickListener: FileClickListener?) {
         this.fileClickListener = fileClickListener
@@ -41,11 +43,20 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val itemView = inflater.inflate(R.layout.list_item_file, parent, false)
+        selectorColor?.let {
+            val checkBoxColor = it.getColor(R.styleable.media_selectorColor, DEFAULT_SELECTED_COLOR)
+            val colorStateList = ColorStateList.valueOf(checkBoxColor)
+            itemView.findViewById<CheckBox>(R.id.isSelected).buttonTintList = colorStateList
+        }
         return FileViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
         holder.bind(getItem(position), holder.adapterPosition)
+    }
+
+    fun setCheckBoxColor(checkBoxColor: TypedArray) {
+        selectorColor = checkBoxColor
     }
 
     inner class FileViewHolder(private val binding: View) : RecyclerView.ViewHolder(binding) {
