@@ -14,7 +14,6 @@ import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.CheckBox
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
