@@ -45,3 +45,8 @@ Step 5. Listener single file and multi file selector method
             }
         })
 
+
+TODO
+1) Flicker issue when media selection
+2) when scroll media thumbnail is overlap
+3) fix lagging issue
