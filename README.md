@@ -20,7 +20,7 @@ check this URL : https://developer.android.com/training/data-storage/shared/medi
 
 Step 4. Add this code in UI
 
-    `<com.github.pankaj046.library.FileExplorer
+    <com.github.pankaj046.library.FileExplorer
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/file_explorer"
@@ -29,19 +29,19 @@ Step 4. Add this code in UI
         app:selectedTextColor="@color/white"
         app:buttonColor="@color/white"
         app:buttonTextColor="@color/black"
-        app:selectorColor="@color/white"/>`
+        app:selectorColor="@color/white"/>
 
 Step 5. Listener single file and multi file selector method
 
 
-        `val fileExplorer = findViewById(R.id.file_explorer)
+        val fileExplorer = findViewById(R.id.file_explorer)
         fileExplorer?.setListener(object : FileClickListener {
             override fun onClick(file: File?) {
-            Toast.makeText(this@MainActivity, file?.name, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, file?.name, Toast.LENGTH_SHORT).show()
             }
 
             override fun mutipleSelected(paths: HashSet<String>?) {
                 Toast.makeText(this@MainActivity, paths?.size.toString(), Toast.LENGTH_SHORT).show()
             }
-        })`
+        })
 
