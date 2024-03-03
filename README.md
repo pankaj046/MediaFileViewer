@@ -15,8 +15,8 @@ Step 2. Add the dependency
 
 `implementation 'com.github.pankaj046:MediaFileViewer:0.0.1'`
 
-Step 3. Check and allow file permission 
-check this URL : https://developer.android.com/training/data-storage/shared/media
+Step 3. Check and allow file permission to access media files
+https://developer.android.com/training/data-storage/shared/media
 
 Step 4. Add this code in UI
 
