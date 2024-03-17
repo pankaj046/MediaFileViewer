@@ -101,33 +101,25 @@ class FileExplorer @JvmOverloads constructor(
         val filePaths = ArrayList<String>()
         val contentResolver = context.contentResolver
 
-        val imageQueryUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        val imageProjection = arrayOf(
-            MediaStore.Images.Media.DATA,
-            MediaStore.Images.Media.DISPLAY_NAME
+        val projection = arrayOf(
+            MediaStore.MediaColumns.DATA,
+            MediaStore.MediaColumns.DISPLAY_NAME
         )
-        val imageSelection = "${MediaStore.Images.Media.MIME_TYPE} LIKE 'image/%'"
-        val imageCursor = contentResolver.query(imageQueryUri, imageProjection, imageSelection, null, null)
-        imageCursor?.use { cursor ->
-            while (cursor.moveToNext()) {
-                val imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
-                val imageName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME))
-                filePaths.add(imagePath)
-            }
-        }
 
-        val videoQueryUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        val videoProjection = arrayOf(
-            MediaStore.Video.Media.DATA,
-            MediaStore.Video.Media.DISPLAY_NAME
+        val selection = "${MediaStore.MediaColumns.MIME_TYPE} LIKE 'image/%' OR ${MediaStore.MediaColumns.MIME_TYPE} LIKE 'video/%'"
+        val sortOrder = "${MediaStore.MediaColumns.DATE_ADDED} DESC"
+        val cursor = contentResolver.query(
+            MediaStore.Files.getContentUri("external"),
+            projection,
+            selection,
+            null,
+            sortOrder
         )
-        val videoSelection = "${MediaStore.Video.Media.MIME_TYPE} LIKE 'video/%'"
-        val videoCursor = contentResolver.query(videoQueryUri, videoProjection, videoSelection, null, null)
-        videoCursor?.use { cursor ->
-            while (cursor.moveToNext()) {
-                val videoPath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA))
-                val videoName = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME))
-                filePaths.add(videoPath)
+        cursor?.use { dataCursor ->
+            val dataColumnIndex = dataCursor.getColumnIndex(MediaStore.MediaColumns.DATA)
+            while (dataCursor.moveToNext()) {
+                val filePath = dataCursor.getString(dataColumnIndex)
+                filePaths.add(filePath)
             }
         }
         return filePaths
