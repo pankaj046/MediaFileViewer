@@ -16,11 +16,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         fileExplorer = findViewById(R.id.file_explorer)
         fileExplorer?.setListener(object : FileClickListener {
-            override fun onClick(file: File?) {
-                Toast.makeText(this@MainActivity, file?.name, Toast.LENGTH_SHORT).show()
+            override fun singleSelection(path: String?) {
+                Toast.makeText(this@MainActivity, path, Toast.LENGTH_SHORT).show()
             }
 
-            override fun mutipleSelected(paths: HashSet<String>?) {
+            override fun multiSelection(paths: HashSet<String>?) {
                 Toast.makeText(this@MainActivity, paths?.size.toString(), Toast.LENGTH_SHORT).show()
             }
         })

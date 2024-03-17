@@ -80,7 +80,7 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
 
             binding.setOnClickListener {
                 if (selectedFile.size == 0){
-                    fileClickListener?.onClick(file)
+                    fileClickListener?.singleSelection(file.absolutePath)
                 }
 
                 if (selectedFile.size > 0) {

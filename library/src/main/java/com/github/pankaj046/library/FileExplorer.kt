@@ -1,6 +1,5 @@
 package com.github.pankaj046.library
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
@@ -88,7 +87,7 @@ class FileExplorer @JvmOverloads constructor(
             }
         })
 
-        btnSelectedItem.setOnClickListener { fileClickListener?.mutipleSelected(selectedFile) }
+        btnSelectedItem.setOnClickListener { fileClickListener?.multiSelection(selectedFile) }
     }
 
 
