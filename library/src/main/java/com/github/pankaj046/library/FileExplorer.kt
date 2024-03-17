@@ -48,7 +48,7 @@ class FileExplorer @JvmOverloads constructor(
             val buttonTextColor = typedArray.getColor(R.styleable.media_buttonTextColor, DEFAULT_BUTTON_TEXT_COLOR)
             val barColor = typedArray.getColor(R.styleable.media_barColor, DEFAULT_BAR_COLOR)
             val selectedTextColor = typedArray.getColor(R.styleable.media_textColor, DEFAULT_SELECTED_TEXT_COLOR)
-            val mediaType = typedArray.getInt(R.styleable.media_fileType, 0)
+            val mediaType = typedArray.getInt(R.styleable.media_fileType, DEFAULT_FILE_TYPE)
             this.setBackgroundColor(bgColor)
             multiSelectionView.setBackgroundColor(barColor)
             selectedItemCount.setTextColor(selectedTextColor)
