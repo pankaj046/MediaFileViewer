@@ -96,7 +96,6 @@ class FileExplorer @JvmOverloads constructor(
         fileAdapter.addListener(fileClickListener)
     }
 
-    @SuppressLint("Range")
     private fun getMediaFilePaths(context: Context): ArrayList<String> {
         val filePaths = ArrayList<String>()
         val contentResolver = context.contentResolver

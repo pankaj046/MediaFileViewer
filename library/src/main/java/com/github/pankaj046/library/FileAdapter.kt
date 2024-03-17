@@ -24,7 +24,6 @@ import java.util.concurrent.Executors
 class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiffCallback()) {
 
     private val executor: Executor = Executors.newFixedThreadPool(4)
-    private val handler = Handler(Looper.getMainLooper())
     private var fileClickListener: FileClickListener?=null
     private var adapterClickListener: AdapterClickListener?=null
     private var selectedFile: HashSet<String> = hashSetOf()
@@ -73,24 +72,21 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
             }else{
                 isSelected.visibility = View.GONE
             }
-            executor.execute {
-                val thumbnail = if (isVideoFile(file.absolutePath)) {
-                    ThumbnailUtils.createVideoThumbnail(file.absolutePath, MediaStore.Images.Thumbnails.MINI_KIND)
-                } else {
-                    BitmapFactory.decodeFile(file.absolutePath)
-                }
-                thumbnail?.let {
-                    handler.post {
-                        imageView.setImageBitmap(thumbnail)
-                    }
-                }
-            }
 
-            if (isVideoFile(file.absolutePath)) {
-                playButton.visibility = View.VISIBLE
-            } else {
-                playButton.visibility = View.GONE
-            }
+            ImageViewer.Builder(binding.context)
+                .setFileUrl(file.absolutePath)
+                .load(imageView)
+                .setListener(object : ImageViewer.MediaInfoListener {
+                    override fun isVideo(isVideo: Boolean) {
+                        if (isVideo) {
+                            playButton.visibility = View.VISIBLE
+                        } else {
+                            playButton.visibility = View.GONE
+                        }
+                    }
+                })
+                .build()
+
 
             binding.setOnClickListener {
                 if (selectedFile.size == 0){
@@ -124,12 +120,6 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
                 }
                 return@setOnLongClickListener false
             }
-        }
-
-        private fun isVideoFile(filePath: String): Boolean {
-            val extension = filePath.substringAfterLast('.')
-            val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.lowercase())
-            return mimeType?.startsWith("video/") == true
         }
     }
 }
