@@ -65,6 +65,7 @@ class FileExplorer @JvmOverloads constructor(
         val includeEdge = false
         recyclerView.addItemDecoration(GridSpacingItemDecoration(spanCount, spacing, includeEdge))
         val data = getMediaFilePaths(context)
+        recyclerView.setItemViewCacheSize(data.size)
         fileAdapter.submitList(data)
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = fileAdapter
