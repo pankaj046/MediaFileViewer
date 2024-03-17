@@ -5,7 +5,9 @@
         <attr name="buttonColor" format="color"/>
         <attr name="buttonTextColor" format="color"/>
         <attr name="barColor" format="color"/>
-        <attr name="selectedTextColor" format="color"/>
-        <attr name="selectorColor" format="color"/>
+        <attr name="selectorTextColor" format="color"/>
+        <attr name="textColor" format="color"/>
+        <attr name="selectorBackgroundColor" format="color"/>
+        <attr name="selectorStrokeColor" format="color"/>
     </declare-styleable>
 </resources>

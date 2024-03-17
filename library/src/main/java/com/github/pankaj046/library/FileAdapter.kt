@@ -1,19 +1,12 @@
 package com.github.pankaj046.library
 
-import android.content.res.ColorStateList
 import android.content.res.TypedArray
-import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.media.ThumbnailUtils
-import android.os.Handler
-import android.os.Looper
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.MimeTypeMap
-import android.widget.CheckBox
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
@@ -42,9 +35,9 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
         val inflater = LayoutInflater.from(parent.context)
         val itemView = inflater.inflate(R.layout.list_item_file, parent, false)
         selectorColor?.let {
-            val checkBoxColor = it.getColor(R.styleable.media_selectorColor, DEFAULT_SELECTED_COLOR)
-            val colorStateList = ColorStateList.valueOf(checkBoxColor)
-            itemView.findViewById<CheckBox>(R.id.isSelected).buttonTintList = colorStateList
+           itemView.findViewById<RoundedTextView>(R.id.isSelected).apply {
+               setStyleBackground(it)
+           }
         }
         return FileViewHolder(itemView)
     }
@@ -62,15 +55,13 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
         fun bind(filePath: String, adapterPosition: Int) {
             val imageView = binding.findViewById<ImageView>(R.id.imageView)
             val playButton = binding.findViewById<ImageView>(R.id.playButton)
-            val isSelected = binding.findViewById<CheckBox>(R.id.isSelected)
-
+            val isSelected = binding.findViewById<TextView>(R.id.isSelected)
 
             val file = File(filePath)
-            isSelected.isChecked = selectedFile.contains(file.absolutePath)
-            if (selectedFile.size > 0) {
+            if (selectedFile.size > 0 && selectedFile.contains(file.absolutePath)) {
                 isSelected.visibility = View.VISIBLE
             }else{
-                isSelected.visibility = View.GONE
+                isSelected.visibility = View.INVISIBLE
             }
 
             ImageViewer.Builder(binding.context)
@@ -81,11 +72,10 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
                         if (isVideo) {
                             playButton.visibility = View.VISIBLE
                         } else {
-                            playButton.visibility = View.GONE
+                            playButton.visibility = View.INVISIBLE
                         }
                     }
-                })
-                .build()
+                }).build()
 
 
             binding.setOnClickListener {
@@ -104,9 +94,8 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
                     if (selectedFile.size > 0) {
                         isSelected.visibility = View.VISIBLE
                     }else{
-                        isSelected.visibility = View.GONE
+                        isSelected.visibility = View.INVISIBLE
                         adapterClickListener?.onClick(selectedFile)
-                        notifyDataSetChanged()
                     }
                     notifyItemChanged(adapterPosition)
                 }
@@ -116,7 +105,7 @@ class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiff
                 if (selectedFile.size == 0) {
                     selectedFile.add(file.absolutePath)
                     adapterClickListener?.onClick(selectedFile)
-                    notifyDataSetChanged()
+                    notifyItemChanged(adapterPosition)
                 }
                 return@setOnLongClickListener false
             }

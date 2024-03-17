@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">library</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="icon">icon placeholder</string>
     <string name="play">video player icon</string>
+    <string name="checked">✔</string>
 </resources>
