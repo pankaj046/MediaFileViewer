@@ -13,7 +13,7 @@ Step 1. Add the JitPack repository to your build file
 
 Step 2. Add the dependency
 
-`implementation 'com.github.pankaj046:MediaFileViewer:0.0.1'`
+`implementation 'com.github.pankaj046:MediaFileViewer:0.0.2'`
 
 Step 3. Check and allow file permission to access media files
 https://developer.android.com/training/data-storage/shared/media
