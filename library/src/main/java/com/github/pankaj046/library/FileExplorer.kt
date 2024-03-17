@@ -33,6 +33,7 @@ class FileExplorer @JvmOverloads constructor(
     private val DEFAULT_BUTTON_TEXT_COLOR = Color.BLACK
     private val DEFAULT_BAR_COLOR = Color.BLACK
     private val DEFAULT_SELECTED_TEXT_COLOR = Color.WHITE
+    private val DEFAULT_FILE_TYPE = 0
 
     init {
         inflate(context, R.layout.layout_file_explorer, this)
@@ -40,30 +41,32 @@ class FileExplorer @JvmOverloads constructor(
         multiSelectionView = findViewById(R.id.bottomLayout)
         selectedItemCount = findViewById(R.id.selectedItemCount)
         btnSelectedItem = findViewById(R.id.btnSelectedItem)
-        attrs?.let {
+        val type = attrs?.let {
             val typedArray = context.obtainStyledAttributes(it, R.styleable.media)
             val bgColor = typedArray.getColor(R.styleable.media_backgroundColor, DEFAULT_BACKGROUND_COLOR)
             val buttonColor = typedArray.getColor(R.styleable.media_buttonColor, DEFAULT_BUTTON_COLOR)
             val buttonTextColor = typedArray.getColor(R.styleable.media_buttonTextColor, DEFAULT_BUTTON_TEXT_COLOR)
             val barColor = typedArray.getColor(R.styleable.media_barColor, DEFAULT_BAR_COLOR)
             val selectedTextColor = typedArray.getColor(R.styleable.media_textColor, DEFAULT_SELECTED_TEXT_COLOR)
+            val mediaType = typedArray.getInt(R.styleable.media_fileType, 0)
             this.setBackgroundColor(bgColor)
             multiSelectionView.setBackgroundColor(barColor)
             selectedItemCount.setTextColor(selectedTextColor)
             btnSelectedItem.setBackgroundColor(buttonColor)
             btnSelectedItem.setTextColor(buttonTextColor)
             fileAdapter.setCheckBoxColor(typedArray)
+            mediaType
         }
-        setupRecyclerView()
+        setupRecyclerView(type!!)
     }
 
-    private fun setupRecyclerView() {
+    private fun setupRecyclerView(mediaType: Int = 0) {
         recyclerView.layoutManager = GridLayoutManager(context, 3)
         val spanCount = 3
         val spacing = 10
         val includeEdge = false
         recyclerView.addItemDecoration(GridSpacingItemDecoration(spanCount, spacing, includeEdge))
-        val data = getMediaFilePaths(context)
+        val data = getMediaFilePaths(context, mediaType)
         recyclerView.setItemViewCacheSize(data.size)
         fileAdapter.submitList(data)
         recyclerView.setHasFixedSize(true)
@@ -96,7 +99,7 @@ class FileExplorer @JvmOverloads constructor(
         fileAdapter.addListener(fileClickListener)
     }
 
-    private fun getMediaFilePaths(context: Context): ArrayList<String> {
+    private fun getMediaFilePaths(context: Context, mediaType: Int): ArrayList<String> {
         val filePaths = ArrayList<String>()
         val contentResolver = context.contentResolver
 
@@ -104,8 +107,19 @@ class FileExplorer @JvmOverloads constructor(
             MediaStore.MediaColumns.DATA,
             MediaStore.MediaColumns.DISPLAY_NAME
         )
+        val selection = when (mediaType) {
+            1 -> {
+                "${MediaStore.MediaColumns.MIME_TYPE} LIKE 'image/%'"
+            }
+            2 -> {
+                "${MediaStore.MediaColumns.MIME_TYPE} LIKE 'video/%'"
+            }
+            else -> {
+                "${MediaStore.MediaColumns.MIME_TYPE} LIKE 'image/%' OR ${MediaStore.MediaColumns.MIME_TYPE} LIKE 'video/%'"
+            }
+        }
 
-        val selection = "${MediaStore.MediaColumns.MIME_TYPE} LIKE 'image/%' OR ${MediaStore.MediaColumns.MIME_TYPE} LIKE 'video/%'"
+
         val sortOrder = "${MediaStore.MediaColumns.DATE_ADDED} DESC"
         val cursor = contentResolver.query(
             MediaStore.Files.getContentUri("external"),
