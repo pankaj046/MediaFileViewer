@@ -30,7 +30,7 @@ Step 4. Add this code in UI
         app:buttonColor="@color/white"
         app:buttonTextColor="@color/black"
         app:textColor="@android:color/white"
-        app:fileType="video"
+        app:fileType="all || video || image"
         app:selectorTextColor="@android:color/black"
         app:selectorStrokeColor="@android:color/holo_purple"
         app:selectorBackgroundColor="@android:color/darker_gray"/>
