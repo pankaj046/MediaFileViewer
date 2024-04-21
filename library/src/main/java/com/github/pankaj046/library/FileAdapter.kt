@@ -16,12 +16,10 @@ import java.util.concurrent.Executors
 
 class FileAdapter : ListAdapter<String, FileAdapter.FileViewHolder>(FileItemDiffCallback()) {
 
-    private val executor: Executor = Executors.newFixedThreadPool(4)
     private var fileClickListener: FileClickListener?=null
     private var adapterClickListener: AdapterClickListener?=null
     private var selectedFile: HashSet<String> = hashSetOf()
     private var selectorColor:TypedArray?=null
-    private val DEFAULT_SELECTED_COLOR = Color.WHITE
 
     fun addListener(fileClickListener: FileClickListener?) {
         this.fileClickListener = fileClickListener
